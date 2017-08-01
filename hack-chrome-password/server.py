@@ -33,10 +33,10 @@ if data:
     with open(filename, "wb") as f:
         f.write(data)
         f.flush()
-while True:
-    try:
-        with open(filename, 'rb') as f:
-            print(f.read())
-            break
-    except IOError:
-        time.sleep(2)
+    while True:
+        try:
+            with open(filename, 'rb') as f:
+                print(f.read())
+                break
+        except IOError:
+            time.sleep(2)
