@@ -10,6 +10,19 @@ import time
 HOST = '192.168.0.104'
 PORT = 1991
 
+
+def recvall(sock):
+    BUFF_SIZE = 1024  # 1 KiB
+    data = ""
+    while True:
+        part = sock.recv(BUFF_SIZE)
+        data += part
+        if part < BUFF_SIZE:
+            # either 0 or end of data
+            break
+    return data
+
+
 data = None
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
@@ -21,7 +34,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Connected by: ', addr)
 
             # Receive data
-            data = conn.recv(51200)
+            data = recvall(conn)
             conn.send(b'success')
     except Exception as e:
         print(e)
