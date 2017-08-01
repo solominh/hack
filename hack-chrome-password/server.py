@@ -5,21 +5,36 @@ Created on 20 Jun 2015
 '''
 import socket
 import time
+import struct
 
-
-HOST = '192.168.0.104'
+HOST = '192.168.0.109'
 PORT = 1991
 
 
-def recvall(sock):
-    BUFF_SIZE = 1024  # 1 KiB
-    data = ""
-    while True:
-        part = sock.recv(BUFF_SIZE)
-        data += part
-        if part < BUFF_SIZE:
-            # either 0 or end of data
-            break
+def send_msg(sock, msg):
+    # Prefix each message with a 4-byte length (network byte order)
+    msg = struct.pack('>I', len(msg)) + msg
+    sock.sendall(msg)
+
+
+def recv_msg(sock):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(sock, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(sock, msglen)
+
+
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = b''
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
     return data
 
 
@@ -34,8 +49,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Connected by: ', addr)
 
             # Receive data
-            data = recvall(conn)
-            conn.send(b'success')
+            data = recv_msg(conn)
+            send_msg(conn, b'success')
     except Exception as e:
         print(e)
 

