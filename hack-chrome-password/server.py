@@ -21,7 +21,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Connected by: ', addr)
 
             # Receive data
-            data = conn.recv(1048576)
+            while True:
+                newData = conn.recv(1024)
+                if not newData:
+                    break
+                if data:
+                    data = data + newData
+                else:
+                    data = newData
             conn.send(b'success')
     except Exception as e:
         print(e)
