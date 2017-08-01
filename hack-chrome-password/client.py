@@ -88,8 +88,8 @@ try:
             binary_data = passfile.read()
         if binary_data:
             send_msg(s, binary_data)
-            data = recv_msg(s)
-            print('Received', repr(data))
+            # data = recv_msg(s)
+            # print('Received', repr(data))
 
         # Test local
         # if binary_data:

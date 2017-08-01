@@ -50,7 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             # Receive data
             data = recv_msg(conn)
-            send_msg(conn, b'success')
+            # send_msg(conn, b'success')
     except Exception as e:
         print(e)
 
